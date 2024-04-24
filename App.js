@@ -1,8 +1,6 @@
-import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import {
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -10,35 +8,50 @@ import {
 } from "react-native";
 
 export default function App() {
-  const [inputValue, setInputValue] = useState("");
-  const [selectedValue, setSelectedValue] = useState("deny");
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toogle = () => setIsEnabled((prev) => !prev);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      inputValue: "",
+      selectedValue: "deny",
+      isEnabled: false,
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  const onError = (data) => {
+    console.log(data);
+  };
+
   return (
     <View style={styles.container}>
-      <TextInput
-        style={{ ...styles.input, ...styles.text }}
-        onChangeText={setInputValue}
-        value={inputValue}
-        placeholder="Input some text"
-      />
-      <Picker
-        style={styles.picker}
-        selectedValue={selectedValue}
-        onValueChange={setSelectedValue}
+      <Controller
+        control={control}
+        name={"text"}
+        rules={{
+          required: { value: true, message: "Please fill the field" },
+          pattern: {value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Please enter the email address"},
+        }}
+        render={({ field: { onChange, value } }) => {
+          return (
+            <TextInput
+              style={{ ...styles.input, ...styles.text }}
+              onChangeText={onChange}
+              value={value}
+              placeholder="Input some text"
+            />
+          );
+        }}
+      ></Controller>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSubmit(onSubmit, onError)}
       >
-        <Picker.Item style={styles.text} label="Confirm" value="confirm" />
-        <Picker.Item style={styles.text} label="Deny" value="deny" />
-      </Picker>
-      <View style={styles.switchContainer}>
-        <Text style={styles.text}>Switch</Text>
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          onValueChange={toogle}
-          value={isEnabled}
-        />
-      </View>
-      <TouchableOpacity style={styles.button}>
         <Text style={styles.text}>Submit</Text>
       </TouchableOpacity>
     </View>
