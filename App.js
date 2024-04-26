@@ -1,5 +1,4 @@
 import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   StyleSheet,
@@ -16,6 +15,7 @@ export default function App() {
     handleSubmit,
     formState: { errors },
     getValues,
+    trigger,
   } = useForm({
     defaultValues: {
       inputValue: "",
@@ -71,7 +71,10 @@ export default function App() {
             <Picker
               style={styles.picker}
               selectedValue={value}
-              onValueChange={onChange}
+              onValueChange={(value) => {
+                onChange(value);
+                trigger();
+              }}
             >
               <Picker.Item
                 style={styles.text}
@@ -100,7 +103,10 @@ export default function App() {
               <Text style={styles.text}>Switch</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
-                onValueChange={onChange}
+                onValueChange={(value) => {
+                  onChange(value);
+                  trigger();
+                }}
                 value={value}
               />
             </View>
