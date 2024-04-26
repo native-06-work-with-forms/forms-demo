@@ -1,6 +1,9 @@
+import { Picker } from "@react-native-picker/picker";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -12,6 +15,7 @@ export default function App() {
     control,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm({
     defaultValues: {
       inputValue: "",
@@ -32,7 +36,7 @@ export default function App() {
     <View style={styles.container}>
       <Controller
         control={control}
-        name={"text"}
+        name={"inputValue"}
         rules={{
           required: { value: true, message: "Please fill the field" },
           pattern: {
@@ -51,7 +55,67 @@ export default function App() {
           );
         }}
       ></Controller>
-      {errors.text && <Text style={styles.error}>{errors.text.message}</Text>}
+      <Controller
+        control={control}
+        name={"selectedValue"}
+        rules={{
+          validate: () => {
+            const { selectedValue, isEnabled } = getValues();
+            return selectedValue === "confirm" && isEnabled
+              ? true
+              : "The data does not match";
+          },
+        }}
+        render={({ field: { onChange, value } }) => {
+          return (
+            <Picker
+              style={styles.picker}
+              selectedValue={value}
+              onValueChange={onChange}
+            >
+              <Picker.Item
+                style={styles.text}
+                label="Confirm"
+                value="confirm"
+              />
+              <Picker.Item style={styles.text} label="Deny" value="deny" />
+            </Picker>
+          );
+        }}
+      ></Controller>
+      <Controller
+        control={control}
+        name={"isEnabled"}
+        rules={{
+          validate: () => {
+            const { selectedValue, isEnabled } = getValues();
+            return selectedValue === "confirm" && isEnabled
+              ? true
+              : "The data does not match";
+          },
+        }}
+        render={({ field: { onChange, value } }) => {
+          return (
+            <View style={styles.switchContainer}>
+              <Text style={styles.text}>Switch</Text>
+              <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                onValueChange={onChange}
+                value={value}
+              />
+            </View>
+          );
+        }}
+      ></Controller>
+      {Object.values(errors) && (
+        <Text style={{ ...styles.text, ...styles.error }}>
+          {Object.values(errors).reduce((current, error) => {
+            return `${current}
+            ${error.message} `;
+          }, "")}
+        </Text>
+      )}
+
       <TouchableOpacity
         style={styles.button}
         onPress={handleSubmit(onSubmit, onError)}
