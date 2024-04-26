@@ -35,7 +35,10 @@ export default function App() {
         name={"text"}
         rules={{
           required: { value: true, message: "Please fill the field" },
-          pattern: {value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: "Please enter the email address"},
+          pattern: {
+            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            message: "Please enter the email address",
+          },
         }}
         render={({ field: { onChange, value } }) => {
           return (
@@ -48,6 +51,7 @@ export default function App() {
           );
         }}
       ></Controller>
+      {errors.text && <Text style={styles.error}>{errors.text.message}</Text>}
       <TouchableOpacity
         style={styles.button}
         onPress={handleSubmit(onSubmit, onError)}
@@ -89,5 +93,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: { fontSize: 20 },
+  error: { color: "red" },
 });
 
